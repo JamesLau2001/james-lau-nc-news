@@ -1,7 +1,8 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+To run this locally, ensure to set up the environment variables (.env.test and .env.development), connecting to their respective databases.
 
+GET /api/topics has been added: run a GET request on the endpoint '/api/topics' to retrieve a body of all the topics.
 
 
 --- 
