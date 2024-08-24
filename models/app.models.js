@@ -11,8 +11,9 @@ exports.selectApi = () => {
   return fs
     .readFile(`${__dirname}/../endpoints.json`, "utf-8")
     .then((documents) => {
-      const parsedDocuments = JSON.parse(documents);
-      return parsedDocuments;
+      
+      const parsedDocuments = JSON.parse(documents)
+      return parsedDocuments
     });
 };
 
