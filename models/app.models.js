@@ -1,3 +1,4 @@
+const { nextTick } = require("process");
 const db = require("../db/connection");
 const fs = require("fs/promises");
 
@@ -36,4 +37,17 @@ exports.selectArticles = () =>{
   return db.query(queryString).then(({rows})=>{
     return rows
   })
+}
+
+exports.selectComments = (article_id) => {
+let queryString = `SELECT * FROM comments`
+const queryVal = []
+if (article_id){
+  queryString += ` WHERE article_id = $1`
+  queryVal.push(article_id)
+}
+return db.query(queryString, queryVal).then(({rows})=>{
+  
+  return rows
+})
 }

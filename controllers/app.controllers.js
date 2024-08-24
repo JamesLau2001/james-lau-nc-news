@@ -1,8 +1,10 @@
+const { promises } = require("supertest/lib/test");
 const {
   selectTopics,
   selectApi,
   selectArticleById,
-  selectArticles
+  selectArticles,
+  selectComments,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -39,11 +41,26 @@ exports.getArticleById = (request, response, next) => {
     });
 };
 
-exports.getArticles = (request, response, next) =>{
-  selectArticles().then((articles)=>{
-    response.status(200).send({articles})
-  })
-  .catch((err)=>{
-    next(err)
-  })
-}
+exports.getArticles = (request, response, next) => {
+  selectArticles()
+    .then((articles) => {
+      response.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getComments = (request, response, next) => {
+  const { article_id } = request.params;
+  selectComments(article_id)
+    .then((comments) => {
+      if (comments.length === 0) {
+        return Promise.reject({ message: "article does not exist" });
+      }
+      response.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
