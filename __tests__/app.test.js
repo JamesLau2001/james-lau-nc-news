@@ -103,6 +103,7 @@ describe("/api/articles", ()=>{
     .expect(200)
     .then((response)=>{
       const {body: {articles}} = response
+      expect(articles).toBeSortedBy("created_at", { descending: true });
       articles.forEach((article)=>{
         expect(article).toHaveProperty('author')
         expect(article).toHaveProperty('title')
@@ -124,6 +125,7 @@ describe("/api/articles/:article_id/comments", ()=>{
     .expect(200)
     .then((response)=>{
       const {body: {comments}} = response
+      expect(comments).toBeSortedBy("created_at", { descending: true });
       comments.forEach((comment)=>{
         expect(comment).toHaveProperty('comment_id')
         expect(comment).toHaveProperty('votes')
