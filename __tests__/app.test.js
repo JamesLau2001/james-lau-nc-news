@@ -48,3 +48,47 @@ describe("/api", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id", () => {
+  test("GET 200: /api/articles/:article_id returns a body of an article based on its article_id", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((response) => {
+        const {
+          body: { article },
+        } = response;
+        expect(Object.keys(article).length).toBe(8);
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("article_id");
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
+        expect(article).toHaveProperty("article_img_url");
+      });
+  });
+  test("GET 404: sends an appropiate status and error message whhen given a valid but non-existent article_id", () => {
+    return request(app)
+      .get("/api/articles/3000")
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("article does not exist");
+      });
+  });
+  test("GET 400: sends an appropiate status and error message whhen given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/hello")
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
+      });
+  });
+});
