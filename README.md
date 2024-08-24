@@ -8,6 +8,8 @@ GET /api has been added: run a GET request on the endpoint '/api' to retrieve a 
 Note to add more information in endpoints.json whenever a new endpoint is added, including when applicable: a brief description of the purpose and functionality of the enpoint, acceptable queries, format of the request body, and example response.
 
 GET /api/articles/:article_id has been added: run a get request on the endpoint '/api/articles/:article_id' to retrieve a body of a single article by its id.
+
+GET /api/articles has been added: run a get request on the endpoint '/api/articles' to retrieve a body of an array of all articles with comment counts.
 --- 
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)

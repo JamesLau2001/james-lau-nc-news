@@ -29,3 +29,11 @@ exports.selectArticleById = (article_id) => {
     return rows[0];
   });
 };
+
+exports.selectArticles = () =>{
+  let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) as comment_count FROM articles`
+  queryString += ` LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id`
+  return db.query(queryString).then(({rows})=>{
+    return rows
+  })
+}
