@@ -37,7 +37,7 @@ describe("/api", () => {
         const {
           body: { documents },
         } = response;
-        console.log(documents)
+        
         for (const keys in documents) {
           const endPoint = documents[keys];
           expect(endPoint).toHaveProperty("description");
@@ -60,7 +60,7 @@ describe("/api/articles/:article_id", () => {
         const {
           body: { article },
         } = response;
-        console.log(article)
+        
         expect(Object.keys(article).length).toBe(8);
         expect(article).toHaveProperty("author");
         expect(article).toHaveProperty("title");
@@ -95,3 +95,24 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+
+describe("/api/articles", ()=>{
+  test("GET 200: returns a body of an array of article objects, with the correct information", ()=>{
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then((response)=>{
+      const {body: {articles}} = response
+      articles.forEach((article)=>{
+        expect(article).toHaveProperty('author')
+        expect(article).toHaveProperty('title')
+        expect(article).toHaveProperty('article_id')
+        expect(article).toHaveProperty('topic')
+        expect(article).toHaveProperty('created_at')
+        expect(article).toHaveProperty('votes')
+        expect(article).toHaveProperty('article_img_url')
+        expect(article).toHaveProperty('comment_count')
+      })
+    })
+  })
+})
