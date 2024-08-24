@@ -46,8 +46,9 @@ if (article_id){
   queryString += ` WHERE article_id = $1`
   queryVal.push(article_id)
 }
+queryString += ` ORDER BY created_at ASC`
 return db.query(queryString, queryVal).then(({rows})=>{
-  
+  console.log(rows)
   return rows
 })
 }
