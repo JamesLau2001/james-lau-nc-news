@@ -18,6 +18,7 @@ describe("/api/topics", () => {
         const {
           body: { topics },
         } = response;
+        
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
           expect(topic).toHaveProperty("description");
@@ -36,6 +37,7 @@ describe("/api", () => {
         const {
           body: { documents },
         } = response;
+        console.log(documents)
         for (const keys in documents) {
           const endPoint = documents[keys];
           expect(endPoint).toHaveProperty("description");
@@ -58,6 +60,7 @@ describe("/api/articles/:article_id", () => {
         const {
           body: { article },
         } = response;
+        console.log(article)
         expect(Object.keys(article).length).toBe(8);
         expect(article).toHaveProperty("author");
         expect(article).toHaveProperty("title");
