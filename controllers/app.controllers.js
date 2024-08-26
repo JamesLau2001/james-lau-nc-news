@@ -5,6 +5,7 @@ const {
   selectArticleById,
   selectArticles,
   selectComments,
+  postNewComment,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -64,3 +65,14 @@ exports.getComments = (request, response, next) => {
       next(err);
     });
 };
+
+exports.postComment = (request, response, next) => {
+  const {article_id} = request.params
+  const commentToPost = request.body
+  postNewComment(article_id, commentToPost).then((comment)=>{
+    response.status(201).send({comment})
+  })
+  .catch((err)=>{
+    next(err)
+  })
+}

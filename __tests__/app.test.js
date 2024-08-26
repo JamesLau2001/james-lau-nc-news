@@ -9,7 +9,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("/api/topics", () => {
+describe("GET /api/topics", () => {
   test("GET 200: responds with a body of topic objects", () => {
     return request(app)
       .get("/api/topics")
@@ -18,7 +18,7 @@ describe("/api/topics", () => {
         const {
           body: { topics },
         } = response;
-        
+
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
           expect(topic).toHaveProperty("description");
@@ -28,7 +28,7 @@ describe("/api/topics", () => {
   });
 });
 
-describe("/api", () => {
+describe("GET /api", () => {
   test("GET 200: responds with a body that documents all available endpoints", () => {
     return request(app)
       .get("/api")
@@ -37,7 +37,7 @@ describe("/api", () => {
         const {
           body: { documents },
         } = response;
-        
+
         for (const keys in documents) {
           const endPoint = documents[keys];
           expect(endPoint).toHaveProperty("description");
@@ -51,7 +51,7 @@ describe("/api", () => {
   });
 });
 
-describe("/api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("GET 200: /api/articles/:article_id returns a body of an article based on its article_id", () => {
     return request(app)
       .get("/api/articles/1")
@@ -60,7 +60,7 @@ describe("/api/articles/:article_id", () => {
         const {
           body: { article },
         } = response;
-        
+
         expect(Object.keys(article).length).toBe(8);
         expect(article).toHaveProperty("author");
         expect(article).toHaveProperty("title");
@@ -96,46 +96,50 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe("/api/articles", ()=>{
-  test("GET 200: returns a body of an array of article objects, with the correct information", ()=>{
+describe("GET /api/articles", () => {
+  test("GET 200: returns a body of an array of article objects, with the correct information", () => {
     return request(app)
-    .get("/api/articles")
-    .expect(200)
-    .then((response)=>{
-      const {body: {articles}} = response
-      expect(articles).toBeSortedBy("created_at", { descending: true });
-      articles.forEach((article)=>{
-        expect(article).toHaveProperty('author')
-        expect(article).toHaveProperty('title')
-        expect(article).toHaveProperty('article_id')
-        expect(article).toHaveProperty('topic')
-        expect(article).toHaveProperty('created_at')
-        expect(article).toHaveProperty('votes')
-        expect(article).toHaveProperty('article_img_url')
-        expect(article).toHaveProperty('comment_count')
-      })
-    })
-  })
-})
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const {
+          body: { articles },
+        } = response;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+});
 
-describe("/api/articles/:article_id/comments", ()=>{
-  test("GET 200: returns a body of an array of all comments for a given article_id", ()=>{
+describe("GET /api/articles/:article_id/comments", () => {
+  test("GET 200: returns a body of an array of all comments for a given article_id", () => {
     return request(app)
-    .get("/api/articles/1/comments")
-    .expect(200)
-    .then((response)=>{
-      const {body: {comments}} = response
-      expect(comments).toBeSortedBy("created_at", { descending: true });
-      comments.forEach((comment)=>{
-        expect(comment).toHaveProperty('comment_id')
-        expect(comment).toHaveProperty('votes')
-        expect(comment).toHaveProperty('created_at')
-        expect(comment).toHaveProperty('author')
-        expect(comment).toHaveProperty('body')
-        expect(comment).toHaveProperty('article_id')
-      })
-    })
-  })
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const {
+          body: { comments },
+        } = response;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("article_id");
+        });
+      });
+  });
   test("GET 404: sends an appropiate status and error message whhen given a valid but non-existent article_id", () => {
     return request(app)
       .get("/api/articles/1000/comments")
@@ -158,4 +162,51 @@ describe("/api/articles/:article_id/comments", ()=>{
         expect(message).toBe("bad request");
       });
   });
-})
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST 201: Adds a body of a comment to comments, and responds with said comment", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        body: "new added body",
+        author: "butter_bridge",
+      })
+      .expect(201)
+      .then((response) => {
+        const {
+          body: { comment },
+        } = response;
+        
+        expect(comment.body).toBe("new added body");
+        expect(comment.username).toBe("butter_bridge");
+      });
+  });
+  // test("POST 404: returns appropiate error message when given a valid but non-existent id", ()=>{
+  //   return request(app)
+  //   .post("/api/articles/15/comments")
+  //   .send({
+  //     body: "new added body",
+  //     author: "butter_bridge",
+  //   })
+  //   .expect(404)
+  //   .then((response) =>{
+  //     const {body: {message}} = response
+  //     expect(message).toBe("article does not exist")
+  //   })
+  // })
+  test("POST 400: responds with an appropriate status and error message when provided with a bad comment(missing entries)", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        body: "new added body",
+      })
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
+      });
+  });
+});
