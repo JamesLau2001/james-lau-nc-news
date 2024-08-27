@@ -82,7 +82,7 @@ describe("GET /api/articles/:article_id", () => {
         const {
           body: { message },
         } = response;
-        
+
         expect(message).toBe("not found");
       });
   });
@@ -109,7 +109,7 @@ describe("GET /api/articles", () => {
           body: { articles },
         } = response;
         expect(articles).toBeSortedBy("created_at", { descending: true });
-        
+
         articles.forEach((article) => {
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
@@ -222,7 +222,7 @@ describe("PATCH: /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/1")
       .expect(200)
-      .send({inc_votes : 1})
+      .send({ inc_votes: 1 })
       .then((response) => {
         const {
           body: { article },
@@ -232,18 +232,18 @@ describe("PATCH: /api/articles/:article_id", () => {
           title: "Living in the shadow of a great man",
           topic: "mitch",
           author: "butter_bridge",
-          body: "I find this existence challenging",    
-          created_at: expect.any(String),     
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
           votes: 101,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
       });
   });
-  test("404: returns appropiate error message when given a valid but non-existent id", ()=>{
+  test("404: returns appropiate error message when given a valid but non-existent id", () => {
     return request(app)
       .patch("/api/articles/50")
-      .send({inc_votes : 1})
+      .send({ inc_votes: 1 })
       .expect(404)
       .then((response) => {
         const {
@@ -251,11 +251,39 @@ describe("PATCH: /api/articles/:article_id", () => {
         } = response;
         expect(message).toBe("not found");
       });
-  })
+  });
   test("POST 400: responds with an appropriate status and error message when provided with missing entries", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({})
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: deletes the specified comment by its id and sends no body back", () => {
+    return request(app).delete("/api/comments/3").expect(204);
+  });
+  test("DELETE:404 responds with an appropriate status and error message when given a non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("not found");
+      });
+  });
+  test("DELETE:400 responds with an appropriate status and error message when given an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/hello")
       .expect(400)
       .then((response) => {
         const {

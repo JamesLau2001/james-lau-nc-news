@@ -7,6 +7,7 @@ const {
   selectComments,
   postNewComment,
   selectArticleToPatch,
+  selectCommentToDelete,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -82,3 +83,13 @@ exports.patchArticle = (request, response, next) => {
     next(err)
   })
 };
+
+exports.deleteComment = (request, response, next) =>{
+  const {comment_id} = request.params
+  selectCommentToDelete(comment_id).then((comment)=>{
+    response.status(204).send()
+  })
+  .catch((err)=>{
+    next(err)
+  })
+}
