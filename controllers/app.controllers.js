@@ -8,6 +8,7 @@ const {
   postNewComment,
   selectArticleToPatch,
   selectCommentToDelete,
+  selectAllUsers,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -67,6 +68,7 @@ exports.postComment = (request, response, next) => {
   const commentToPost = request.body;
   postNewComment(article_id, commentToPost)
     .then((comment) => {
+      
       response.status(201).send({ comment });
     })
     .catch((err) => {
@@ -88,6 +90,15 @@ exports.deleteComment = (request, response, next) =>{
   const {comment_id} = request.params
   selectCommentToDelete(comment_id).then((comment)=>{
     response.status(204).send()
+  })
+  .catch((err)=>{
+    next(err)
+  })
+}
+
+exports.getAllUsers = (request, response, next) =>{
+  selectAllUsers().then((users)=>{
+    response.status(200).send({users})
   })
   .catch((err)=>{
     next(err)
