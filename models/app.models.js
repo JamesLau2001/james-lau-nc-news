@@ -47,6 +47,7 @@ exports.selectArticles = () => {
   });
 };
 
+
 exports.selectComments = (article_id) => {
   let queryString = `SELECT * FROM comments`;
   const queryValue = [];
