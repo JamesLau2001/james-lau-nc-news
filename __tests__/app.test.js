@@ -63,14 +63,15 @@ describe("GET /api/articles/:article_id", () => {
         expect(Object.keys(article).length).toBe(8);
         expect(article).toMatchObject({
           article_id: 1,
-          title: 'Living in the shadow of a great man',
-          topic: 'mitch',
-          author: 'butter_bridge',
-          body: 'I find this existence challenging',
-          created_at: '2020-07-09T20:11:00.000Z',
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
           votes: 100,
-          article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
-        })
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
       });
   });
   test("GET 404: sends an appropiate status and error message whhen given a valid but non-existent article_id", () => {
@@ -81,7 +82,7 @@ describe("GET /api/articles/:article_id", () => {
         const {
           body: { message },
         } = response;
-        // console.log(message)
+        
         expect(message).toBe("not found");
       });
   });
@@ -108,6 +109,7 @@ describe("GET /api/articles", () => {
           body: { articles },
         } = response;
         expect(articles).toBeSortedBy("created_at", { descending: true });
+        
         articles.forEach((article) => {
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
@@ -179,30 +181,81 @@ describe("POST /api/articles/:article_id/comments", () => {
         const {
           body: { comment },
         } = response;
-        
+
         expect(comment.body).toBe("new added body");
         expect(comment.username).toBe("butter_bridge");
       });
   });
-  test("POST 404: returns appropiate error message when given a valid but non-existent id", ()=>{
+  test("POST 404: returns appropiate error message when given a valid but non-existent id", () => {
     return request(app)
-    .post("/api/articles/15/comments")
-    .send({
-      body: "new added body",
-      author: "butter_bridge",
-    })
-    .expect(404)
-    .then((response) =>{
-      const {body: {message}} = response
-      expect(message).toBe("not found")
-    })
-  })
+      .post("/api/articles/15/comments")
+      .send({
+        body: "new added body",
+        author: "butter_bridge",
+      })
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("not found");
+      });
+  });
   test("POST 400: responds with an appropriate status and error message when provided with a bad comment(missing entries)", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send({
         body: "new added body",
       })
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
+      });
+  });
+});
+
+describe("PATCH: /api/articles/:article_id", () => {
+  test("200: responds with the patched body", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(200)
+      .send({inc_votes : 1})
+      .then((response) => {
+        const {
+          body: { article },
+        } = response;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",    
+          created_at: expect.any(String),     
+          votes: 101,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("404: returns appropiate error message when given a valid but non-existent id", ()=>{
+    return request(app)
+      .patch("/api/articles/50")
+      .send({inc_votes : 1})
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("not found");
+      });
+  })
+  test("POST 400: responds with an appropriate status and error message when provided with missing entries", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
       .expect(400)
       .then((response) => {
         const {
