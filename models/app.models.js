@@ -1,7 +1,7 @@
 const { nextTick } = require("process");
 const db = require("../db/connection");
 const fs = require("fs/promises");
-const {checkExists} = require("../db/seeds/utils")
+const { checkExists } = require("../db/seeds/utils");
 
 exports.selectTopics = () => {
   return db.query(`SELECT * FROM topics`).then(({ rows }) => {
@@ -21,21 +21,20 @@ exports.selectApi = () => {
 exports.selectArticleById = (article_id) => {
   let queryString = `SELECT * FROM articles`;
   const queryValue = [];
-  const queryProms = []
+  const queryProms = [];
   if (article_id) {
     queryString += ` WHERE article_id = $1`;
     queryValue.push(article_id);
-    queryProms.push(checkExists("articles", "article_id", article_id))
+    queryProms.push(checkExists("articles", "article_id", article_id));
   }
-  queryProms.push(db.query(queryString, queryValue))
-  return Promise.all(queryProms).then((promResults) =>{
-    if (queryProms.length === 1){
-      return promResults[0].rows
+  queryProms.push(db.query(queryString, queryValue));
+  return Promise.all(queryProms).then((promResults) => {
+    if (queryProms.length === 1) {
+      return promResults[0].rows;
     } else {
-      return promResults[1].rows[0]
+      return promResults[1].rows[0];
     }
-  })
-  
+  });
 };
 
 exports.selectArticles = () => {
@@ -47,44 +46,61 @@ exports.selectArticles = () => {
   });
 };
 
-
 exports.selectComments = (article_id) => {
   let queryString = `SELECT * FROM comments`;
   const queryValue = [];
-  const queryProms = []
+  const queryProms = [];
   if (article_id) {
     queryString += ` WHERE article_id = $1`;
     queryValue.push(article_id);
-    queryProms.push(checkExists("articles", "article_id", article_id))
+    queryProms.push(checkExists("articles", "article_id", article_id));
   }
   queryString += ` ORDER BY created_at DESC`;
-  queryProms.push(db.query(queryString, queryValue))
-  return Promise.all(queryProms).then((promResults) =>{
-    if (queryProms.length === 1){
-      return promResults[0].rows
+  queryProms.push(db.query(queryString, queryValue));
+  return Promise.all(queryProms).then((promResults) => {
+    if (queryProms.length === 1) {
+      return promResults[0].rows;
     } else {
-      return promResults[1].rows
+      return promResults[1].rows;
     }
-  })
+  });
 };
 
 exports.postNewComment = (article_id, commentToPost) => {
   const { body, author } = commentToPost;
   let queryString = `INSERT INTO comments (body, article_id, author) 
                     VALUES ($1, $2, $3) RETURNING author as username, body`;
-  const queryValue = []
+  const queryValue = [];
+  const queryProms = [];
+  if (article_id && commentToPost) {
+    queryValue.push(body, article_id, author);
+    queryProms.push(checkExists("articles", "article_id", article_id));
+  }
+  queryProms.push(db.query(queryString, queryValue));
+  return Promise.all(queryProms).then((promResults) => {
+    if (queryProms.length === 1) {
+      return promResults[0].rows[0];
+    } else {
+      return promResults[1].rows[0];
+    }
+  });
+};
+
+exports.selectArticleToPatch = (article_id, inc_votes) => {
+  const queryString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING*`
+  const queryValue = [inc_votes]
   const queryProms = []
-  if(article_id && commentToPost){
-    queryValue.push(body, article_id, author)
+  if (article_id){
+    queryValue.push(article_id)
     queryProms.push(checkExists("articles", "article_id", article_id))
   }
   queryProms.push(db.query(queryString, queryValue))
-  return Promise.all(queryProms).then((promResults) =>{
-    
-    if (queryProms.length === 1){
-      return promResults[0].rows[0]
+  return Promise.all(queryProms).then((promResults) => {
+    console.log(promResults[1].rows)
+    if (queryProms.length === 1) {
+      return promResults[0].rows[0];
     } else {
-      return promResults[1].rows[0]
+      return promResults[1].rows[0];
     }
-  })
+  });
 };

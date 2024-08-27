@@ -10,6 +10,7 @@ exports.checkExists = (table_name, column_name, value) => {
   // console.log(queryString, "<--- QS")
   // console.log(value, "<--- value")
   return db.query(queryString, [value]).then(({rows}) =>{
+    
     if (rows.length === 0){
       return Promise.reject({message: "not found"})
     }

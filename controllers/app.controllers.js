@@ -6,6 +6,7 @@ const {
   selectArticles,
   selectComments,
   postNewComment,
+  selectArticleToPatch,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -61,12 +62,21 @@ exports.getComments = (request, response, next) => {
 };
 
 exports.postComment = (request, response, next) => {
-  const {article_id} = request.params
-  const commentToPost = request.body
-  postNewComment(article_id, commentToPost).then((comment)=>{
-    response.status(201).send({comment})
-  })
-  .catch((err)=>{
-    next(err)
-  })
-}
+  const { article_id } = request.params;
+  const commentToPost = request.body;
+  postNewComment(article_id, commentToPost)
+    .then((comment) => {
+      response.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchArticle = (request, response, next) => {
+  const { article_id } = request.params;
+  const { inc_votes } = request.body;
+  selectArticleToPatch(article_id, inc_votes).then((article) => {
+    response.status(200).send({ article });
+  });
+};
