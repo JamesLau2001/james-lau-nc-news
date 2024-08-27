@@ -104,3 +104,23 @@ exports.selectArticleToPatch = (article_id, inc_votes) => {
     }
   });
 };
+
+exports.selectCommentToDelete = (comment_id) =>{
+  let queryString = ``
+  const queryValue = []
+  const queryProms = []
+  if (comment_id){
+    queryString += `DELETE FROM comments WHERE comment_id = $1 RETURNING*`
+    queryValue.push(comment_id)
+    queryProms.push(checkExists("comments", "comment_id", comment_id))
+  }
+  queryProms.push(db.query(queryString, queryValue))
+  return Promise.all(queryProms)
+  .then((promResults)=>{
+    if (queryProms.length === 1) {
+      return promResults[0].rows[0];
+    } else {
+      return promResults[1].rows[0];
+    }
+  })
+}

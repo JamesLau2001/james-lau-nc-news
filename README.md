@@ -16,6 +16,8 @@ GET /api/articles/:article_id/comments has been added: run a get request on the 
 POST /api/articles/:article_id/comments has been added: run a post request on '/api/articles/:article_id/comments' to post a new comment into the comments table, and retrieve the entered comment.
 
 PATCH /api/articles/:article_id has been added: run a patch request on '/api/articles/:article_id' to patch an existing article to update its votes, and retrieve this new article.
+
+DELETE /api/comments/:comment_id has been added: run a delete request on '/api/comments/:comment_id' to delete a comment by its comment_id.
 --- 
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
