@@ -60,16 +60,17 @@ describe("GET /api/articles/:article_id", () => {
         const {
           body: { article },
         } = response;
-
         expect(Object.keys(article).length).toBe(8);
-        expect(article).toHaveProperty("author");
-        expect(article).toHaveProperty("title");
-        expect(article).toHaveProperty("article_id");
-        expect(article).toHaveProperty("body");
-        expect(article).toHaveProperty("topic");
-        expect(article).toHaveProperty("created_at");
-        expect(article).toHaveProperty("votes");
-        expect(article).toHaveProperty("article_img_url");
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: '2020-07-09T20:11:00.000Z',
+          votes: 100,
+          article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+        })
       });
   });
   test("GET 404: sends an appropiate status and error message whhen given a valid but non-existent article_id", () => {
@@ -80,7 +81,8 @@ describe("GET /api/articles/:article_id", () => {
         const {
           body: { message },
         } = response;
-        expect(message).toBe("article does not exist");
+        // console.log(message)
+        expect(message).toBe("not found");
       });
   });
   test("GET 400: sends an appropiate status and error message whhen given an invalid article_id", () => {
@@ -148,7 +150,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         const {
           body: { message },
         } = response;
-        expect(message).toBe("article does not exist");
+        expect(message).toBe("not found");
       });
   });
   test("GET 400: sends an appropiate status and error message whhen given an invalid article_id", () => {
@@ -182,19 +184,19 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(comment.username).toBe("butter_bridge");
       });
   });
-  // test("POST 404: returns appropiate error message when given a valid but non-existent id", ()=>{
-  //   return request(app)
-  //   .post("/api/articles/15/comments")
-  //   .send({
-  //     body: "new added body",
-  //     author: "butter_bridge",
-  //   })
-  //   .expect(404)
-  //   .then((response) =>{
-  //     const {body: {message}} = response
-  //     expect(message).toBe("article does not exist")
-  //   })
-  // })
+  test("POST 404: returns appropiate error message when given a valid but non-existent id", ()=>{
+    return request(app)
+    .post("/api/articles/15/comments")
+    .send({
+      body: "new added body",
+      author: "butter_bridge",
+    })
+    .expect(404)
+    .then((response) =>{
+      const {body: {message}} = response
+      expect(message).toBe("not found")
+    })
+  })
   test("POST 400: responds with an appropriate status and error message when provided with a bad comment(missing entries)", () => {
     return request(app)
       .post("/api/articles/2/comments")

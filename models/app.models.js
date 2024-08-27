@@ -1,6 +1,7 @@
 const { nextTick } = require("process");
 const db = require("../db/connection");
 const fs = require("fs/promises");
+const {checkExists} = require("../db/seeds/utils")
 
 exports.selectTopics = () => {
   return db.query(`SELECT * FROM topics`).then(({ rows }) => {
@@ -20,14 +21,21 @@ exports.selectApi = () => {
 exports.selectArticleById = (article_id) => {
   let queryString = `SELECT * FROM articles`;
   const queryValue = [];
-
+  const queryProms = []
   if (article_id) {
     queryString += ` WHERE article_id = $1`;
     queryValue.push(article_id);
+    queryProms.push(checkExists("articles", "article_id", article_id))
   }
-  return db.query(queryString, queryValue).then(({ rows }) => {
-    return rows[0];
-  });
+  queryProms.push(db.query(queryString, queryValue))
+  return Promise.all(queryProms).then((promResults) =>{
+    if (queryProms.length === 1){
+      return promResults[0].rows
+    } else {
+      return promResults[1].rows[0]
+    }
+  })
+  
 };
 
 exports.selectArticles = () => {
@@ -41,26 +49,41 @@ exports.selectArticles = () => {
 
 exports.selectComments = (article_id) => {
   let queryString = `SELECT * FROM comments`;
-  const queryVal = [];
+  const queryValue = [];
+  const queryProms = []
   if (article_id) {
     queryString += ` WHERE article_id = $1`;
-    queryVal.push(article_id);
+    queryValue.push(article_id);
+    queryProms.push(checkExists("articles", "article_id", article_id))
   }
   queryString += ` ORDER BY created_at DESC`;
-  return db.query(queryString, queryVal).then(({ rows }) => {
-    return rows;
-  });
+  queryProms.push(db.query(queryString, queryValue))
+  return Promise.all(queryProms).then((promResults) =>{
+    if (queryProms.length === 1){
+      return promResults[0].rows
+    } else {
+      return promResults[1].rows
+    }
+  })
 };
 
 exports.postNewComment = (article_id, commentToPost) => {
   const { body, author } = commentToPost;
   let queryString = `INSERT INTO comments (body, article_id, author) 
                     VALUES ($1, $2, $3) RETURNING author as username, body`;
-  const queryVal = []
+  const queryValue = []
+  const queryProms = []
   if(article_id && commentToPost){
-    queryVal.push(body, article_id, author)
+    queryValue.push(body, article_id, author)
+    queryProms.push(checkExists("articles", "article_id", article_id))
   }
-  return db.query(queryString, queryVal).then(({rows}) =>{
-    return rows[0]
+  queryProms.push(db.query(queryString, queryValue))
+  return Promise.all(queryProms).then((promResults) =>{
+    
+    if (queryProms.length === 1){
+      return promResults[0].rows[0]
+    } else {
+      return promResults[1].rows[0]
+    }
   })
 };

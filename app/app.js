@@ -24,18 +24,6 @@ app.get("/api/articles/:article_id/comments", getComments)
 app.post("/api/articles/:article_id/comments", postComment)
 
 app.use((err, request, response, next) => {
-  if (err.message === "article does not exist") {
-    response.status(404).send(err);
-  } 
-  // else if(err.detail.includes('is not present in table')){
-  //   response.status(404).send({message:"article does not exist"})
-  // }
-  else {
-    next(err);
-  }
-});
-
-app.use((err, request, response, next) => {
   if (err.code === "22P02") {
     response.status(400).send({ message: "bad request" });
   } 
@@ -46,6 +34,14 @@ app.use((err, request, response, next) => {
     next(err);
   }
 });
+
+app.use((err, request, response, next) =>{
+  if(err.message){
+    response.status(404).send(err)
+  }else {
+    next(err)
+  }
+})
 
 app.use((err, request, response, next) => {
   console.log(err);
