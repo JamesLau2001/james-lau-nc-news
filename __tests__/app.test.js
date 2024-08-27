@@ -228,14 +228,40 @@ describe("PATCH: /api/articles/:article_id", () => {
           body: { article },
         } = response;
         expect(article).toMatchObject({
+          article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
           author: "butter_bridge",
-          body: "I find this existence challenging",          
+          body: "I find this existence challenging",    
+          created_at: expect.any(String),     
           votes: 101,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
+      });
+  });
+  test("404: returns appropiate error message when given a valid but non-existent id", ()=>{
+    return request(app)
+      .patch("/api/articles/50")
+      .send({inc_votes : 1})
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("not found");
+      });
+  })
+  test("POST 400: responds with an appropriate status and error message when provided with missing entries", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
       });
   });
 });

@@ -78,6 +78,7 @@ exports.postNewComment = (article_id, commentToPost) => {
   }
   queryProms.push(db.query(queryString, queryValue));
   return Promise.all(queryProms).then((promResults) => {
+    
     if (queryProms.length === 1) {
       return promResults[0].rows[0];
     } else {
@@ -96,7 +97,6 @@ exports.selectArticleToPatch = (article_id, inc_votes) => {
   }
   queryProms.push(db.query(queryString, queryValue))
   return Promise.all(queryProms).then((promResults) => {
-    console.log(promResults[1].rows)
     if (queryProms.length === 1) {
       return promResults[0].rows[0];
     } else {
