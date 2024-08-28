@@ -22,6 +22,8 @@ DELETE /api/comments/:comment_id has been added: run a delete request on '/api/c
 GET /api/users has been added: run a get request on '/api/users' to retrieve all users
 
 GET /api/articles? has been added: run a get request on '/api/articles?' to retrieve an array of article objects ordered by chosen queries (column name by either ascending or descending). This endpoint also now takes a topic query, which filters the response by a chosen topic.
+
+GET /api/articles/:article_id has been updated: running a get request on this endpoint will also now show the comment_count
 --- 
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
