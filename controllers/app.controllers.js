@@ -43,7 +43,9 @@ exports.getArticleById = (request, response, next) => {
 };
 
 exports.getArticles = (request, response, next) => {
-  selectArticles()
+  const { sort_by, order } = request.query;
+  console.log(sort_by)
+  selectArticles(sort_by, order)
     .then((articles) => {
       response.status(200).send({ articles });
     })
@@ -68,7 +70,6 @@ exports.postComment = (request, response, next) => {
   const commentToPost = request.body;
   postNewComment(article_id, commentToPost)
     .then((comment) => {
-      
       response.status(201).send({ comment });
     })
     .catch((err) => {
@@ -79,28 +80,32 @@ exports.postComment = (request, response, next) => {
 exports.patchArticle = (request, response, next) => {
   const { article_id } = request.params;
   const { inc_votes } = request.body;
-  selectArticleToPatch(article_id, inc_votes).then((article) => {
-    response.status(200).send({ article });
-  }).catch((err)=>{
-    next(err)
-  })
+  selectArticleToPatch(article_id, inc_votes)
+    .then((article) => {
+      response.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
-exports.deleteComment = (request, response, next) =>{
-  const {comment_id} = request.params
-  selectCommentToDelete(comment_id).then((comment)=>{
-    response.status(204).send()
-  })
-  .catch((err)=>{
-    next(err)
-  })
-}
+exports.deleteComment = (request, response, next) => {
+  const { comment_id } = request.params;
+  selectCommentToDelete(comment_id)
+    .then((comment) => {
+      response.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
-exports.getAllUsers = (request, response, next) =>{
-  selectAllUsers().then((users)=>{
-    response.status(200).send({users})
-  })
-  .catch((err)=>{
-    next(err)
-  })
-}
+exports.getAllUsers = (request, response, next) => {
+  selectAllUsers()
+    .then((users) => {
+      response.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

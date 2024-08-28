@@ -39,6 +39,9 @@ app.use((err, request, response, next) => {
   else if (err.code === '23502'){
     response.status(400).send({ message: "bad request" })
   }
+  else if(err.code === '42703'){
+    response.status(400).send({ message: "bad request" })
+  }
   else {
     next(err);
   }
