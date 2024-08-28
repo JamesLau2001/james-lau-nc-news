@@ -19,16 +19,18 @@ exports.selectApi = () => {
 };
 
 exports.selectArticleById = (article_id) => {
-  let queryString = `SELECT * FROM articles`;
+  let queryString = `SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles 
+                      LEFT JOIN comments ON comments.article_id = articles.article_id 
+                      WHERE articles.article_id = $1 
+                      GROUP BY articles.article_id`;
   const queryValue = [];
   const queryProms = [];
-
-  queryString += ` WHERE article_id = $1`;
   queryValue.push(article_id);
   queryProms.push(checkExists("articles", "article_id", article_id));
   queryProms.push(db.query(queryString, queryValue));
 
   return Promise.all(queryProms).then((promResults) => {
+    console.log(promResults[1].rows[0]);
     return promResults[1].rows[0];
   });
 };
@@ -43,7 +45,6 @@ exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
   }
   queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()} `;
   return db.query(queryString, queryValue).then(({ rows }) => {
-    console.log(rows);
     return rows;
   });
 };

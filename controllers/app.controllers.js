@@ -53,7 +53,7 @@ exports.getArticles = (request, response, next) => {
       response.status(200).send({ articles });
     })
     .catch((err) => {
-      console.log(err);
+      ;
       next(err);
     });
 };

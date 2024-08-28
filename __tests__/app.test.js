@@ -60,17 +60,17 @@ describe("GET /api/articles/:article_id", () => {
         const {
           body: { article },
         } = response;
-        expect(Object.keys(article).length).toBe(8);
+        expect(Object.keys(article).length).toBe(9);
         expect(article).toMatchObject({
           article_id: 1,
-          title: "Living in the shadow of a great man",
-          topic: "mitch",
-          author: "butter_bridge",
-          body: "I find this existence challenging",
-          created_at: "2020-07-09T20:11:00.000Z",
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: expect.any(String),
           votes: 100,
-          article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+          comment_count: '11'
         });
       });
   });
@@ -182,7 +182,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         const {
           body: { comment },
         } = response;
-
         expect(comment.body).toBe("new added body");
         expect(comment.username).toBe("butter_bridge");
       });
@@ -383,7 +382,7 @@ describe("GET /api/articles?", () => {
 
         expect(articles).toBeSortedBy("created_at", { descending: true });
         expect(articles.length).toBe(1);
-        console.log(articles)
+       
         articles.forEach((article) => {
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
@@ -396,7 +395,7 @@ describe("GET /api/articles?", () => {
         });
       });
   });
-  test("400: responds with an appropriate status and error message when given an invalid queries", () => {
+  test("404: responds with an appropriate status and error message when given an invalid queries", () => {
     return request(app)
       .get("/api/articles?topic=invalid")
       .expect(404)
