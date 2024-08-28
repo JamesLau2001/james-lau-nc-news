@@ -108,7 +108,7 @@ describe("GET /api/articles", () => {
         const {
           body: { articles },
         } = response;
-        
+
         expect(articles).toBeSortedBy("created_at", { descending: true });
 
         articles.forEach((article) => {
@@ -224,7 +224,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         const {
           body: { message },
         } = response;
-        
+
         expect(message).toBe("bad request");
       });
   });
@@ -285,7 +285,7 @@ describe("PATCH: /api/articles/:article_id", () => {
         const {
           body: { message },
         } = response;
-        
+
         expect(message).toBe("bad request");
       });
   });
@@ -319,55 +319,92 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe("GET /api/users", ()=>{
-  test("200: responds with a body of an array of all user objects", ()=>{
+describe("GET /api/users", () => {
+  test("200: responds with a body of an array of all user objects", () => {
     return request(app)
-    .get("/api/users")
-    .expect(200)
-    .then((response)=>{
-      const {body: {users}} = response
-      
-      users.forEach((user)=>{
-        expect(user).toHaveProperty("username")
-        expect(user).toHaveProperty("name")
-        expect(user).toHaveProperty("avatar_url")
-      })
-    })
-  })
-})
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const {
+          body: { users },
+        } = response;
 
-describe("GET /api/articles?", ()=>{
-  test("200: returns a body of a sorted array based on sort_by and order queries", ()=>{
-    return request(app)
-    .get("/api/articles?sort_by=title&order=asc")
-    .expect(200)
-    .then((response) => {
-      const {
-        body: { articles },
-      } = response;
-      expect(articles).toBeSortedBy("title", { ascendinng: true });
-      console.log(articles)
-      articles.forEach((article) => {
-        expect(article).toHaveProperty("author");
-        expect(article).toHaveProperty("title");
-        expect(article).toHaveProperty("article_id");
-        expect(article).toHaveProperty("topic");
-        expect(article).toHaveProperty("created_at");
-        expect(article).toHaveProperty("votes");
-        expect(article).toHaveProperty("article_img_url");
-        expect(article).toHaveProperty("comment_count");
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
       });
-    });
-  })
-  test("400: responds with an appropriate status and error message when given an invalid queries", ()=>{
+  });
+});
+
+describe("GET /api/articles?", () => {
+  test("200: returns a body of a sorted array based on sort_by and order queries", () => {
     return request(app)
-    .get("/api/articles?sort_by=invalidColumn&order=asc")
-    .expect(400)
-    .then((response) => {
-      const {
-        body: { message },
-      } = response;
-      expect(message).toBe("bad request");
-    })
-  })
-})
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then((response) => {
+        const {
+          body: { articles },
+        } = response;
+        expect(articles).toBeSortedBy("title", { ascendinng: true });
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+  test("400: responds with an appropriate status and error message when given an invalid queries", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalidColumn&order=asc")
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
+      });
+  });
+  test("200: returns a body of a sorted array filtered by a topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then((response) => {
+        const {
+          body: { articles },
+        } = response;
+
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articles.length).toBe(1);
+        console.log(articles)
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+  test("400: responds with an appropriate status and error message when given an invalid queries", () => {
+    return request(app)
+      .get("/api/articles?topic=invalid")
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("not found");
+      });
+  });
+});
