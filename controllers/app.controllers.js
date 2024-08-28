@@ -43,13 +43,17 @@ exports.getArticleById = (request, response, next) => {
 };
 
 exports.getArticles = (request, response, next) => {
-  const { sort_by, order } = request.query;
-  console.log(sort_by)
-  selectArticles(sort_by, order)
+  const { sort_by, order, topic } = request.query;
+
+  selectArticles(sort_by, order, topic)
     .then((articles) => {
+      if (articles.length === 0) {
+        return Promise.reject({ message: "not found" });
+      }
       response.status(200).send({ articles });
     })
     .catch((err) => {
+      console.log(err);
       next(err);
     });
 };
