@@ -407,3 +407,35 @@ describe("GET /api/articles?", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("200: responds with an user object by a given username", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then((response) => {
+        const {
+          body: { user },
+        } = response;
+        expect(Object.keys(user).length).toBe(3);
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  test("404: responds with an appropriate status and error message when given a wrong input", () => {
+    return request(app)
+      .get("/api/users/butterbridge")
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("not found");
+      });
+  });
+  
+});

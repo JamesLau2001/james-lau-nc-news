@@ -139,3 +139,14 @@ exports.selectAllUsers = () => {
     return rows;
   });
 };
+
+exports.selectUser = (username) => {
+  let queryString = `SELECT * FROM users WHERE username = $1`
+  const queryValue = [username]
+  return db.query(queryString, queryValue).then(({rows})=>{
+    if (rows.length === 0){
+      return Promise.reject({status:404, message: "not found"})
+    }
+    return rows[0]
+  })
+}

@@ -9,6 +9,7 @@ const {
   selectArticleToPatch,
   selectCommentToDelete,
   selectAllUsers,
+  selectUser,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -53,7 +54,6 @@ exports.getArticles = (request, response, next) => {
       response.status(200).send({ articles });
     })
     .catch((err) => {
-      ;
       next(err);
     });
 };
@@ -112,4 +112,14 @@ exports.getAllUsers = (request, response, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.getUser = (request, response, next) => {
+  const { username } = request.params;
+  selectUser(username).then((user) => {
+    response.status(200).send({ user });
+  })
+  .catch((err)=>{
+    next(err)
+  })
 };
