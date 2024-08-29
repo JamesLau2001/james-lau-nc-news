@@ -384,6 +384,7 @@ describe("GET /api/articles?", () => {
         expect(articles.length).toBe(1);
        
         articles.forEach((article) => {
+          expect(article.topic).toBe("cats")
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
           expect(article).toHaveProperty("article_id");
