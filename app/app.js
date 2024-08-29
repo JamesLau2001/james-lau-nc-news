@@ -35,20 +35,30 @@ app.get("/api/users", getAllUsers);
 app.use((err, request, response, next) => {
   if (err.code === "22P02") {
     response.status(400).send({ message: "bad request" });
-  } else if (err.code === "23502") {
+  } 
+  else if (err.code === "23502") {
     response.status(400).send({ message: "bad request" });
-  } else if (err.code === "42703") {
-    response.status(400).send({ message: "bad request" });
-  } else {
+  } 
+  // else if (err.code === "42703") {
+  //   response.status(400).send({ message: "bad request" });
+  // } else 
+  {
     next(err);
   }
 });
 
+// app.use((err, request, response, next) => {
+//   if (err.message) {
+//     response.status(404).send(err);
+//   } else if (err.message === "not found") {
+//     response.status(404).send(err);
+//   } else {
+//     next(err);
+//   }
+// });
 app.use((err, request, response, next) => {
-  if (err.message) {
-    response.status(404).send(err);
-  } else if (err.message === "not found") {
-    response.status(404).send(err);
+  if (err.status && err.message) {
+    response.status(err.status).send({ message: err.message });
   } else {
     next(err);
   }

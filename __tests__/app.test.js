@@ -18,7 +18,6 @@ describe("GET /api/topics", () => {
         const {
           body: { topics },
         } = response;
-
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
           expect(topic).toHaveProperty("description");
@@ -37,7 +36,6 @@ describe("GET /api", () => {
         const {
           body: { documents },
         } = response;
-
         for (const keys in documents) {
           const endPoint = documents[keys];
           expect(endPoint).toHaveProperty("description");
@@ -63,14 +61,15 @@ describe("GET /api/articles/:article_id", () => {
         expect(Object.keys(article).length).toBe(9);
         expect(article).toMatchObject({
           article_id: 1,
-          title: 'Living in the shadow of a great man',
-          topic: 'mitch',
-          author: 'butter_bridge',
-          body: 'I find this existence challenging',
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
           created_at: expect.any(String),
           votes: 100,
-          article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-          comment_count: '11'
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "11",
         });
       });
   });
@@ -108,9 +107,8 @@ describe("GET /api/articles", () => {
         const {
           body: { articles },
         } = response;
-
         expect(articles).toBeSortedBy("created_at", { descending: true });
-
+        expect(articles.length).toBe(13);
         articles.forEach((article) => {
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
@@ -135,6 +133,7 @@ describe("GET /api/articles/:article_id/comments", () => {
           body: { comments },
         } = response;
         expect(comments).toBeSortedBy("created_at", { descending: true });
+        expect(comments.length).toBe(11);
         comments.forEach((comment) => {
           expect(comment).toHaveProperty("comment_id");
           expect(comment).toHaveProperty("votes");
@@ -182,6 +181,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         const {
           body: { comment },
         } = response;
+        expect(Object.keys(comment).length).toBe(2);
         expect(comment.body).toBe("new added body");
         expect(comment.username).toBe("butter_bridge");
       });
@@ -223,7 +223,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         const {
           body: { message },
         } = response;
-
         expect(message).toBe("bad request");
       });
   });
@@ -327,8 +326,9 @@ describe("GET /api/users", () => {
         const {
           body: { users },
         } = response;
-
+        expect(users.length).toBe(4);
         users.forEach((user) => {
+          expect(Object.keys(user).length).toBe(3);
           expect(user).toHaveProperty("username");
           expect(user).toHaveProperty("name");
           expect(user).toHaveProperty("avatar_url");
@@ -347,8 +347,9 @@ describe("GET /api/articles?", () => {
           body: { articles },
         } = response;
         expect(articles).toBeSortedBy("title", { ascending: true });
-
+        expect(articles.length).toBe(13);
         articles.forEach((article) => {
+          expect(Object.keys(article).length).toBe(8);
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
           expect(article).toHaveProperty("article_id");
@@ -379,12 +380,10 @@ describe("GET /api/articles?", () => {
         const {
           body: { articles },
         } = response;
-
         expect(articles).toBeSortedBy("created_at", { descending: true });
         expect(articles.length).toBe(1);
-       
         articles.forEach((article) => {
-          expect(article.topic).toBe("cats")
+          expect(article.topic).toBe("cats");
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
           expect(article).toHaveProperty("article_id");

@@ -2,6 +2,8 @@ const { nextTick } = require("process");
 const db = require("../db/connection");
 const fs = require("fs/promises");
 const { checkExists } = require("../db/seeds/utils");
+const e = require("express");
+const { promiseHooks } = require("v8");
 
 exports.selectTopics = () => {
   return db.query(`SELECT * FROM topics`).then(({ rows }) => {
@@ -30,12 +32,22 @@ exports.selectArticleById = (article_id) => {
   queryProms.push(db.query(queryString, queryValue));
 
   return Promise.all(queryProms).then((promResults) => {
-    console.log(promResults[1].rows[0]);
     return promResults[1].rows[0];
   });
 };
 
 exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
+  const sort_byArray = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "votes",
+    "article_img_url",
+    "comment_count",
+  ];
+  const orderArray = ["ASC", "DESC"];
   let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) as comment_count FROM articles`;
   const queryValue = [];
   queryString += ` LEFT JOIN comments ON comments.article_id = articles.article_id`;
@@ -43,8 +55,20 @@ exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
     queryString += ` WHERE articles.topic = $1`;
     queryValue.push(topic);
   }
-  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()} `;
+  if (sort_byArray.includes(sort_by)) {
+    queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by}`;
+  } else {
+    return Promise.reject({ status: 400, message: "bad request" });
+  }
+  if (orderArray.includes(order.toUpperCase())) {
+    queryString += ` ${order.toUpperCase()}`;
+  } else {
+    return Promise.reject({ status: 400, message: "bad request" });
+  }
   return db.query(queryString, queryValue).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, message: "not found" });
+    }
     return rows;
   });
 };
