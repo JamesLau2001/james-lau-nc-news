@@ -346,7 +346,7 @@ describe("GET /api/articles?", () => {
         const {
           body: { articles },
         } = response;
-        expect(articles).toBeSortedBy("title", { ascendinng: true });
+        expect(articles).toBeSortedBy("title", { ascending: true });
 
         articles.forEach((article) => {
           expect(article).toHaveProperty("author");
