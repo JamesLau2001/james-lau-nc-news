@@ -449,6 +449,7 @@ describe("PATCH /api/comments/:comment_id", () => {
         const {
           body: { newComment },
         } = response;
+        expect(Object.keys(newComment).length).toBe(6);
         expect(newComment).toMatchObject({
           comment_id: 1,
           body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
@@ -492,6 +493,33 @@ describe("PATCH /api/comments/:comment_id", () => {
           body: { message },
         } = response;
         expect(message).toBe("bad request");
+      });
+  });
+});
+
+describe("POST /api/articles", () => {
+  test("201: Adds a body of an article to articles, and responds with said article", () => {
+    return request(app)
+      .post("/api/articles")
+      .expect(201)
+      .send({
+        author: "butter_bridge",
+        title: "new title",
+        body: "new body",
+        topic: "mitch",
+      })
+      .then((response) => {
+        const {
+          body: { newArticle },
+        } = response;
+        console.log(newArticle);
+        expect(Object.keys(newArticle).length).toBe(4);
+        expect(newArticle).toMatchObject({
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: "0",
+        });
       });
   });
 });

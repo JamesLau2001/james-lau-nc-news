@@ -11,6 +11,7 @@ const {
   selectAllUsers,
   selectUser,
   selectCommentToPatch,
+  selectArticleToPost,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -132,6 +133,17 @@ exports.patchComment = (request, response, next) => {
   selectCommentToPatch(comment_id, inc_votes)
     .then((newComment) => {
       response.status(200).send({ newComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticle = (request, response, next) => {
+  const articleToPost = request.body
+  selectArticleToPost(articleToPost)
+    .then((newArticle) => {
+      response.status(201).send({ newArticle });
     })
     .catch((err) => {
       next(err);

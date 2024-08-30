@@ -141,15 +141,15 @@ exports.selectAllUsers = () => {
 };
 
 exports.selectUser = (username) => {
-  let queryString = `SELECT * FROM users WHERE username = $1`
-  const queryValue = [username]
-  return db.query(queryString, queryValue).then(({rows})=>{
-    if (rows.length === 0){
-      return Promise.reject({status:404, message: "not found"})
+  let queryString = `SELECT * FROM users WHERE username = $1`;
+  const queryValue = [username];
+  return db.query(queryString, queryValue).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, message: "not found" });
     }
-    return rows[0]
-  })
-}
+    return rows[0];
+  });
+};
 
 exports.selectCommentToPatch = (comment_id, inc_votes) => {
   const queryString = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING*`;
@@ -162,4 +162,33 @@ exports.selectCommentToPatch = (comment_id, inc_votes) => {
   return Promise.all(queryProms).then((promResults) => {
     return promResults[1].rows[0];
   });
-}
+};
+
+exports.selectArticleToPost = (articleToPost) => {
+  const { author, title, body, topic, article_img_url = 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700' } = articleToPost;
+
+  const queryString = `
+    INSERT INTO articles (title, topic, author, body, article_img_url) 
+    VALUES ($1, $2, $3, $4, $5) 
+    RETURNING article_id, votes, created_at;
+  `;
+
+  const queryValue = [title, topic, author, body, article_img_url];
+
+  return db.query(queryString, queryValue).then(({ rows }) => {
+    const newArticle = rows[0];
+
+    return db
+      .query(
+        `SELECT COUNT(comment_id) as comment_count 
+       FROM comments 
+       WHERE article_id = $1`,
+        [newArticle.article_id]
+      )
+      .then(({ rows }) => {
+        newArticle.comment_count = rows[0].comment_count;
+
+        return newArticle;
+      });
+  });
+};

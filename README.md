@@ -30,6 +30,7 @@ GET /api/articles? has been added: run a get request on '/api/articles?' to retr
 
 GET /api/articles/:article_id has been updated: running a get request on this endpoint will also now show the comment_count.
 
+POST /api/articles has been added: runninng a post request on '/api/articles/ will post a new article to articles, and accepts the queries: author, title, body, topic, and optional article_img_url. This will also retrieve the new posted article object.
 
 --- 
 
