@@ -150,3 +150,16 @@ exports.selectUser = (username) => {
     return rows[0]
   })
 }
+
+exports.selectCommentToPatch = (comment_id, inc_votes) => {
+  const queryString = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING*`;
+  const queryValue = [inc_votes, comment_id];
+  const queryProms = [];
+
+  queryProms.push(checkExists("comments", "comment_id", comment_id));
+  queryProms.push(db.query(queryString, queryValue));
+
+  return Promise.all(queryProms).then((promResults) => {
+    return promResults[1].rows[0];
+  });
+}

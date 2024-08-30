@@ -1,6 +1,11 @@
 # Northcoders News API
+To access the service provided by this project, please go to https://james-lau-nc-news.onrender.com/.
 
-To run this locally, ensure to set up the environment variables (.env.test and .env.development), connecting to their respective databases.
+This project is an API, that revolves around collecting and manipulating databases.
+
+To fork and clone this repository, fork a copy of the original repository and copy the unnique link to your dashboard, and run $git clone <link>.
+
+To run this locally, ensure to set up the environment variables (.env.test and .env.development), connecting to their respective databases. In order to ensure everything has been set up correctly, please run $npm install, $npm run set-up, $npm run seed, and to run tests please run $npm test app.
 
 GET /api/topics has been added: run a GET request on the endpoint '/api/topics' to retrieve a body of all the topics.
 
@@ -23,7 +28,9 @@ GET /api/users has been added: run a get request on '/api/users' to retrieve all
 
 GET /api/articles? has been added: run a get request on '/api/articles?' to retrieve an array of article objects ordered by chosen queries (column name by either ascending or descending). This endpoint also now takes a topic query, which filters the response by a chosen topic.
 
-GET /api/articles/:article_id has been updated: running a get request on this endpoint will also now show the comment_count
+GET /api/articles/:article_id has been updated: running a get request on this endpoint will also now show the comment_count.
+
+
 --- 
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)

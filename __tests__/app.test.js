@@ -437,5 +437,61 @@ describe("GET /api/users/:username", () => {
         expect(message).toBe("not found");
       });
   });
-  
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: responds with the patched body", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .expect(200)
+      .send({ inc_votes: 5 })
+      .then((response) => {
+        const {
+          body: { newComment },
+        } = response;
+        expect(newComment).toMatchObject({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          author: "butter_bridge",
+          votes: 21,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("404: returns appropiate error message when given a valid but non-existent id", () => {
+    return request(app)
+      .patch("/api/comments/10000")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("not found");
+      });
+  });
+  test("400: responds with an appropriate status and error message when provided with missing entries", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({})
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
+      });
+  });
+  test("400: responds with an appropriate status and error message when given an invalid id", () => {
+    return request(app)
+      .patch("/api/comments/hello")
+      .expect(400)
+      .then((response) => {
+        const {
+          body: { message },
+        } = response;
+        expect(message).toBe("bad request");
+      });
+  });
 });

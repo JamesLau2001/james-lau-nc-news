@@ -10,6 +10,7 @@ const {
   selectCommentToDelete,
   selectAllUsers,
   selectUser,
+  selectCommentToPatch,
 } = require("../models/app.models");
 
 exports.getTopics = (request, response, next) => {
@@ -116,10 +117,23 @@ exports.getAllUsers = (request, response, next) => {
 
 exports.getUser = (request, response, next) => {
   const { username } = request.params;
-  selectUser(username).then((user) => {
-    response.status(200).send({ user });
-  })
-  .catch((err)=>{
-    next(err)
-  })
+  selectUser(username)
+    .then((user) => {
+      response.status(200).send({ user });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchComment = (request, response, next) => {
+  const { comment_id } = request.params;
+  const { inc_votes } = request.body;
+  selectCommentToPatch(comment_id, inc_votes)
+    .then((newComment) => {
+      response.status(200).send({ newComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
