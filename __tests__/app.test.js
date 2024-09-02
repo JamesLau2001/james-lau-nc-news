@@ -512,7 +512,7 @@ describe("POST /api/articles", () => {
         const {
           body: { newArticle },
         } = response;
-        console.log(newArticle);
+        
         expect(Object.keys(newArticle).length).toBe(4);
         expect(newArticle).toMatchObject({
           article_id: 14,

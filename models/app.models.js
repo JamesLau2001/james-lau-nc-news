@@ -166,18 +166,14 @@ exports.selectCommentToPatch = (comment_id, inc_votes) => {
 
 exports.selectArticleToPost = (articleToPost) => {
   const { author, title, body, topic, article_img_url = 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700' } = articleToPost;
-
   const queryString = `
     INSERT INTO articles (title, topic, author, body, article_img_url) 
     VALUES ($1, $2, $3, $4, $5) 
     RETURNING article_id, votes, created_at;
   `;
-
   const queryValue = [title, topic, author, body, article_img_url];
-
   return db.query(queryString, queryValue).then(({ rows }) => {
     const newArticle = rows[0];
-
     return db
       .query(
         `SELECT COUNT(comment_id) as comment_count 
@@ -187,7 +183,6 @@ exports.selectArticleToPost = (articleToPost) => {
       )
       .then(({ rows }) => {
         newArticle.comment_count = rows[0].comment_count;
-
         return newArticle;
       });
   });
