@@ -97,7 +97,7 @@
     "exampleResponse": {}
   },
   "GET /api/users": {
-    "description": "deletes a comment by its id",
+    "description": "gets a body of all user objects",
     "queries": [],
     "exampleResponse": {
       "username": "butter_bridge",
